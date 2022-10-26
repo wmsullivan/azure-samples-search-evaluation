@@ -1,0 +1,3 @@
+opencensus-ext-azure
+python-dotenv
+faker

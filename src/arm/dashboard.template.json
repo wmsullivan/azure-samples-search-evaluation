@@ -1,0 +1,1604 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dashboardName": {
+            "type": "string",
+            "defaultValue": "dashboard-kpi",
+            "metadata": {
+                "description": "The name for the dashboard resource."
+            }
+        },
+        "workbookDisplayName": {
+            "type": "string",
+            "defaultValue": "Tile Queries",
+            "metadata": {
+                "description": "The friendly name for the workbook that is used in the Gallery or Saved List.  This name must be unique within a resource group."
+            }
+        },
+        "workbookType": {
+            "type": "string",
+            "defaultValue": "workbook",
+            "metadata": {
+                "description": "The gallery that the workbook will been shown under. Supported values include workbook, tsg, etc. Usually, this is 'workbook'"
+            }
+        },
+        "ResourceId": {
+            "type": "string",
+            "metadata": {
+                "description": "The AppInsights Resource ID of resource instance to which the workbook will be associated"
+            }
+        },
+        "workbookId": {
+            "type": "string",
+            "defaultValue": "[newGuid()]",
+            "metadata": {
+                "description": "The unique guid for this workbook instance"
+            }
+        }
+    },
+    "variables": {
+        "workbookContent": {
+            "version": "Notebook/1.0",
+            "items": [
+                {
+                    "type": 1,
+                    "content": {
+                        "json": "## New workbook\n---\n\nWelcome to your new workbook.  This area will display text formatted as markdown.\n\n\nWe've included a basic analytics query to get you started. Use the `Edit` button below each section to configure it or add more sections."
+                    },
+                    "name": "text - 2"
+                },
+                {
+                    "type": 1,
+                    "content": {
+                        "json": "## Total Queries - Sum all events with the name \"onSearch\"",
+                        "style": "info"
+                    },
+                    "name": "text - 2",
+                    "styleSettings": {
+                        "showBorder": true
+                    }
+                },
+                {
+                    "type": 3,
+                    "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "customEvents \n| summarize total_queries = sumif(itemCount, name has \"onSearch\")",
+                        "size": 3,
+                        "queryType": 0,
+                        "resourceType": "microsoft.insights/components",
+                        "visualization": "tiles",
+                        "tileSettings": {
+                            "titleContent": {},
+                            "leftContent": {
+                                "columnMatch": "total_queries",
+                                "formatter": 12,
+                                "formatOptions": {
+                                    "min": 0,
+                                    "max": 10,
+                                    "palette": "blue"
+                                },
+                                "numberFormat": {
+                                    "unit": 17,
+                                    "options": {
+                                        "style": "decimal"
+                                    }
+                                },
+                                "tooltipFormat": {
+                                    "tooltip": "Total Queries Submitted"
+                                }
+                            },
+                            "showBorder": false,
+                            "size": "auto"
+                        }
+                    },
+                    "name": "query - 2"
+                },
+                {
+                    "type": 1,
+                    "content": {
+                        "json": "## Total Sessions - Count unique sessions for event \"onSearch\"",
+                        "style": "info"
+                    },
+                    "name": "text - 2 - Copy - Copy",
+                    "styleSettings": {
+                        "showBorder": true
+                    }
+                },
+                {
+                    "type": 3,
+                    "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "customEvents \n| summarize total_sessions = dcountif(session_Id, name has \"onSearch\")",
+                        "size": 3,
+                        "color": "blue",
+                        "queryType": 0,
+                        "resourceType": "microsoft.insights/components",
+                        "visualization": "tiles",
+                        "tileSettings": {
+                            "titleContent": {},
+                            "leftContent": {
+                                "columnMatch": "total_sessions",
+                                "formatter": 12,
+                                "formatOptions": {
+                                    "min": 0,
+                                    "max": 10,
+                                    "palette": "blue"
+                                },
+                                "numberFormat": {
+                                    "unit": 17,
+                                    "options": {
+                                        "style": "decimal"
+                                    }
+                                },
+                                "tooltipFormat": {
+                                    "tooltip": "Total Number of User Sessions"
+                                }
+                            },
+                            "showBorder": false,
+                            "size": "auto"
+                        }
+                    },
+                    "name": "query - 2 - Copy"
+                },
+                {
+                    "type": 1,
+                    "content": {
+                        "json": "## Successful Session Rate - (all sessions ending with success / all sessions with search event) * 100",
+                        "style": "info"
+                    },
+                    "name": "text - 2 - Copy",
+                    "styleSettings": {
+                        "showBorder": true
+                    }
+                },
+                {
+                    "type": 3,
+                    "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "customEvents \n| summarize total_success = dcountif(session_Id, customDimensions.event == 'onSuccess') , total_sessions = dcountif(session_Id, name has \"onSearch\")\n| project todouble(total_success)/todouble(total_sessions)",
+                        "size": 3,
+                        "color": "blue",
+                        "queryType": 0,
+                        "resourceType": "microsoft.insights/components",
+                        "visualization": "tiles",
+                        "tileSettings": {
+                            "titleContent": {},
+                            "leftContent": {
+                                "columnMatch": "Column1",
+                                "formatter": 12,
+                                "formatOptions": {
+                                    "min": 0,
+                                    "max": 80,
+                                    "palette": "redGreen"
+                                },
+                                "numberFormat": {
+                                    "unit": 17,
+                                    "options": {
+                                        "style": "percent"
+                                    }
+                                },
+                                "tooltipFormat": {
+                                    "tooltip": "Successful Sessions / Total Sessions"
+                                }
+                            },
+                            "showBorder": false,
+                            "size": "auto"
+                        }
+                    },
+                    "name": "query - 2 - Copy - Copy"
+                },
+                {
+                    "type": 1,
+                    "content": {
+                        "json": "## Total Users - Number of unique users logging into the system",
+                        "style": "info"
+                    },
+                    "name": "text - 2 - Copy - Copy",
+                    "styleSettings": {
+                        "showBorder": true
+                    }
+                },
+                {
+                    "type": 3,
+                    "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "customEvents \n| summarize dcount(user_Id)",
+                        "size": 3,
+                        "color": "blue",
+                        "queryType": 0,
+                        "resourceType": "microsoft.insights/components",
+                        "visualization": "tiles",
+                        "tileSettings": {
+                            "titleContent": {},
+                            "leftContent": {
+                                "columnMatch": "dcount_user_Id",
+                                "formatter": 12,
+                                "formatOptions": {
+                                    "min": 0,
+                                    "max": 10,
+                                    "palette": "blue"
+                                },
+                                "numberFormat": {
+                                    "unit": 17,
+                                    "options": {
+                                        "style": "decimal"
+                                    }
+                                },
+                                "tooltipFormat": {
+                                    "tooltip": "Total Number of Users"
+                                }
+                            },
+                            "showBorder": false,
+                            "size": "auto"
+                        }
+                    },
+                    "name": "query - 2 - Copy - Copy"
+                },
+                {
+                    "type": 1,
+                    "content": {
+                        "json": "## Mean Reciprocal Rank - All time Mean Reciprocal Rank  - average of rank of first successful result\n",
+                        "style": "info"
+                    },
+                    "name": "text - 2 - Copy - Copy - Copy",
+                    "styleSettings": {
+                        "showBorder": true
+                    }
+                },
+                {
+                    "type": 3,
+                    "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "",
+                        "size": 3,
+                        "color": "blue",
+                        "queryType": 0,
+                        "resourceType": "microsoft.insights/components",
+                        "visualization": "tiles",
+                        "tileSettings": {
+                            "titleContent": {},
+                            "leftContent": {
+                                "columnMatch": "Column1",
+                                "formatter": 12,
+                                "formatOptions": {
+                                    "min": 0,
+                                    "max": 1,
+                                    "palette": "redGreen"
+                                },
+                                "numberFormat": {
+                                    "unit": 17,
+                                    "options": {
+                                        "style": "decimal"
+                                    },
+                                    "emptyValCustomText": "0"
+                                },
+                                "tooltipFormat": {
+                                    "tooltip": "Mean Reciprocal Rank"
+                                }
+                            },
+                            "showBorder": false,
+                            "size": "auto"
+                        }
+                    },
+                    "name": "query - 2 - Copy - Copy - Copy"
+                }
+            ],
+            "isLocked": false,
+            "fallbackResourceIds": []
+        }
+    },
+    "resources": [
+        {
+            "type": "microsoft.insights/workbooks",
+            "apiVersion": "2022-04-01",
+            "name": "[parameters('workbookId')]",
+            "location": "[resourceGroup().location]",
+            "kind": "shared",
+            "properties": {
+                "displayName": "[parameters('workbookDisplayName')]",
+                "sourceId": "[parameters('ResourceId')]",
+                "category": "[parameters('workbookType')]",
+                "serializedData": "[string(variables('workbookContent'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Portal/dashboards",
+            "apiVersion": "2015-08-01-preview",
+            "name": "[parameters('dashboardName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "lenses": {
+                    "0": {
+                        "order": 0,
+                        "parts": {
+                            "0": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 0,
+                                    "colSpan": 2,
+                                    "rowSpan": 2
+                                },
+                                "metadata": {
+                                    "inputs": [],
+                                    "type": "Extension/HubsExtension/PartType/ClockPart",
+                                    "settings": {
+                                        "content": {
+                                            "settings": {
+                                                "timeFormat": "HH:mm",
+                                                "timezoneId": "UTC",
+                                                "version": 1
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "1": {
+                                "position": {
+                                    "x": 2,
+                                    "y": 0,
+                                    "colSpan": 10,
+                                    "rowSpan": 2
+                                },
+                                "metadata": {
+                                    "inputs": [],
+                                    "type": "Extension/HubsExtension/PartType/MarkdownPart",
+                                    "settings": {
+                                        "content": {
+                                            "settings": {
+                                                "content": "# Azure Cognitive Search Monitoring Dashboard\n\n\n",
+                                                "markdownSource": 1,
+                                                "markdownUri": null,
+                                                "subtitle": "",
+                                                "title": ""
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "2": {
+                                "position": {
+                                    "x": 13,
+                                    "y": 0,
+                                    "colSpan": 2,
+                                    "rowSpan": 2
+                                },
+                                "metadata": {
+                                    "inputs": [
+                                        {
+                                            "name": "ComponentId",
+                                            "value": "[parameters('ResourceId')]",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "TimeContext",
+                                            "value": null,
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ResourceIds",
+                                            "value": [
+                                                "[parameters('ResourceId')]"
+                                            ],
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ConfigurationId",
+                                            "value": "[resourceId( 'microsoft.insights/workbooks', parameters('workbookId'))]",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Type",
+                                            "value": "workbook",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "GalleryResourceType",
+                                            "value": "microsoft.insights/components",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PinName",
+                                            "value": "Dashboard Tile Queries",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "StepSettings",
+                                            "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"customEvents \\n| summarize total_queries = sumif(itemCount, name == \\\"onSearch\\\")\",\"size\":3,\"queryType\":0,\"resourceType\":\"microsoft.insights/components\",\"visualization\":\"tiles\",\"tileSettings\":{\"titleContent\":{},\"leftContent\":{\"columnMatch\":\"total_queries\",\"formatter\":12,\"formatOptions\":{\"min\":0,\"max\":10,\"palette\":\"blue\"},\"numberFormat\":{\"unit\":17,\"options\":{\"style\":\"decimal\"}},\"tooltipFormat\":{\"tooltip\":\"Total Queries Submitted\"}},\"showBorder\":false,\"size\":\"auto\"}}",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ParameterValues",
+                                            "value": {},
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Location",
+                                            "value": "eastus",
+                                            "isOptional": true
+                                        }
+                                    ],
+                                    "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart",
+                                    "partHeader": {
+                                        "title": "Total Queries",
+                                        "subtitle": "Submitted queries"
+                                    }
+                                }
+                            },
+                            "3": {
+                                "position": {
+                                    "x": 15,
+                                    "y": 0,
+                                    "colSpan": 2,
+                                    "rowSpan": 2
+                                },
+                                "metadata": {
+                                    "inputs": [
+                                        {
+                                            "name": "ComponentId",
+                                            "value": "[parameters('ResourceId')]",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "TimeContext",
+                                            "value": null,
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ResourceIds",
+                                            "value": [
+                                                "[parameters('ResourceId')]"
+                                            ],
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ConfigurationId",
+                                            "value": "[resourceId( 'microsoft.insights/workbooks', parameters('workbookId'))]",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Type",
+                                            "value": "workbook",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "GalleryResourceType",
+                                            "value": "microsoft.insights/components",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PinName",
+                                            "value": "Dashboard Tile Queries",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "StepSettings",
+                                            "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"customEvents \\n| summarize total_sessions = dcountif(tostring(customDimensions.sessionId), name == \\\"onSearch\\\")\",\"size\":3,\"color\":\"blue\",\"queryType\":0,\"resourceType\":\"microsoft.insights/components\",\"visualization\":\"tiles\",\"tileSettings\":{\"titleContent\":{},\"leftContent\":{\"columnMatch\":\"total_sessions\",\"formatter\":12,\"formatOptions\":{\"min\":0,\"max\":10,\"palette\":\"blue\"},\"numberFormat\":{\"unit\":17,\"options\":{\"style\":\"decimal\"}},\"tooltipFormat\":{\"tooltip\":\"Total Number of User Sessions\"}},\"showBorder\":false,\"size\":\"auto\"}}",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ParameterValues",
+                                            "value": {},
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Location",
+                                            "value": "eastus",
+                                            "isOptional": true
+                                        }
+                                    ],
+                                    "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart",
+                                    "partHeader": {
+                                        "title": "Total Sessions",
+                                        "subtitle": "Unique user sessions"
+                                    }
+                                }
+                            },
+                            "4": {
+                                "position": {
+                                    "x": 17,
+                                    "y": 0,
+                                    "colSpan": 2,
+                                    "rowSpan": 2
+                                },
+                                "metadata": {
+                                    "inputs": [
+                                        {
+                                            "name": "ComponentId",
+                                            "value": "[parameters('ResourceId')]",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "TimeContext",
+                                            "value": null,
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ResourceIds",
+                                            "value": [
+                                                "[parameters('ResourceId')]"
+                                            ],
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ConfigurationId",
+                                            "value": "[resourceId( 'microsoft.insights/workbooks', parameters('workbookId'))]",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Type",
+                                            "value": "workbook",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "GalleryResourceType",
+                                            "value": "microsoft.insights/components",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PinName",
+                                            "value": "Dashboard Tile Queries",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "StepSettings",
+                                            "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"customEvents \\n| summarize dcount(tostring(customDimensions.userId))\",\"size\":3,\"color\":\"blue\",\"queryType\":0,\"resourceType\":\"microsoft.insights/components\",\"visualization\":\"tiles\",\"tileSettings\":{\"titleContent\":{},\"leftContent\":{\"columnMatch\":\"dcount_customDimensions_userId\",\"formatter\":12,\"formatOptions\":{\"min\":0,\"max\":10,\"palette\":\"blue\"},\"numberFormat\":{\"unit\":17,\"options\":{\"style\":\"decimal\"}},\"tooltipFormat\":{\"tooltip\":\"Total Number of Users\"}},\"showBorder\":false,\"size\":\"auto\"}}",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ParameterValues",
+                                            "value": {},
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Location",
+                                            "value": "eastus",
+                                            "isOptional": true
+                                        }
+                                    ],
+                                    "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart",
+                                    "partHeader": {
+                                        "title": "Total Users",
+                                        "subtitle": "Unique users performing searches"
+                                    }
+                                }
+                            },
+                            "5": {
+                                "position": {
+                                    "x": 19,
+                                    "y": 0,
+                                    "colSpan": 2,
+                                    "rowSpan": 2
+                                },
+                                "metadata": {
+                                    "inputs": [
+                                        {
+                                            "name": "ComponentId",
+                                            "value": "[parameters('ResourceId')]",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "TimeContext",
+                                            "value": null,
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ResourceIds",
+                                            "value": [
+                                                "[parameters('ResourceId')]"
+                                            ],
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ConfigurationId",
+                                            "value": "[resourceId( 'microsoft.insights/workbooks', parameters('workbookId'))]",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Type",
+                                            "value": "workbook",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "GalleryResourceType",
+                                            "value": "microsoft.insights/components",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PinName",
+                                            "value": "Dashboard Tile Queries",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "StepSettings",
+                                            "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"customEvents \\n| summarize total_success = dcountif(tostring(customDimensions.sessionId), name == 'onSuccess') , total_sessions = dcountif(tostring(customDimensions.sessionId), name == \\\"onSearch\\\")\\n| project todouble(total_success)/todouble(total_sessions)\",\"size\":3,\"color\":\"blue\",\"queryType\":0,\"resourceType\":\"microsoft.insights/components\",\"visualization\":\"tiles\",\"tileSettings\":{\"titleContent\":{},\"leftContent\":{\"columnMatch\":\"Column1\",\"formatter\":12,\"formatOptions\":{\"min\":0,\"max\":1,\"palette\":\"redGreen\"},\"numberFormat\":{\"unit\":17,\"options\":{\"style\":\"percent\"}},\"tooltipFormat\":{\"tooltip\":\"Successful Sessions / Total Sessions\"}},\"showBorder\":false,\"size\":\"auto\"}}",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ParameterValues",
+                                            "value": {},
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Location",
+                                            "value": "eastus",
+                                            "isOptional": true
+                                        }
+                                    ],
+                                    "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart",
+                                    "partHeader": {
+                                        "title": "Successful Session Rate",
+                                        "subtitle": "Session Ending with Success"
+                                    }
+                                }
+                            },
+                            "6": {
+                                "position": {
+                                    "x": 21,
+                                    "y": 0,
+                                    "colSpan": 2,
+                                    "rowSpan": 2
+                                },
+                                "metadata": {
+                                    "inputs": [
+                                        {
+                                            "name": "ComponentId",
+                                            "value": "[parameters('ResourceId')]",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "TimeContext",
+                                            "value": null,
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ResourceIds",
+                                            "value": [
+                                                "[parameters('ResourceId')]"
+                                            ],
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ConfigurationId",
+                                            "value": "[resourceId( 'microsoft.insights/workbooks', parameters('workbookId'))]",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Type",
+                                            "value": "workbook",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "GalleryResourceType",
+                                            "value": "microsoft.insights/components",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PinName",
+                                            "value": "Dashboard Tile Queries",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "StepSettings",
+                                            "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"let ranks = customEvents\\n| where  name == 'onNavigate' \\n| where timestamp > todatetime('2022-08-16T10:47:28.221Z')\\n| extend queryId=tostring(customDimensions.query), documentId=tostring(customDimensions.documentId), rankPosition=toint(customDimensions.indexRank), session_Id = tostring(customDimensions.sessionId)\\n| distinct session_Id , queryId, documentId, rankPosition;\\ncustomEvents\\n| where   name == 'onSuccess' \\n| extend queryId = tostring(customDimensions.query), documentId=tostring(customDimensions.documentId), rankPosition=toint(customDimensions.indexRank)\\n| project queryId, documentId, mock_timestamp = todatetime(customDimensions.mock_timestamp)\\n| join kind=inner ranks on queryId and documentId\\n| summarize ReciprocalRank  =  arg_max(1.0 / (rankPosition), 1.0 / (rankPosition), *) \\nby session_Id, queryId, format_datetime(mock_timestamp,'yy-MM-dd')\\n|summarize iif(isnan(avg(ReciprocalRank)),0.0, avg(ReciprocalRank))\",\"size\":3,\"color\":\"blue\",\"queryType\":0,\"resourceType\":\"microsoft.insights/components\",\"visualization\":\"tiles\",\"tileSettings\":{\"titleContent\":{},\"leftContent\":{\"columnMatch\":\"Column1\",\"formatter\":12,\"formatOptions\":{\"min\":0,\"max\":0.8,\"palette\":\"redGreen\"},\"numberFormat\":{\"unit\":17,\"options\":{\"style\":\"percent\"},\"emptyValCustomText\":\"0\"},\"tooltipFormat\":{\"tooltip\":\"Mean Reciprocal Rank\"}},\"showBorder\":false,\"size\":\"auto\"}}",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ParameterValues",
+                                            "value": {},
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Location",
+                                            "value": "eastus",
+                                            "isOptional": true
+                                        }
+                                    ],
+                                    "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart",
+                                    "partHeader": {
+                                        "title": "Mean Reciprocal Rank",
+                                        "subtitle": "https://machinelearning.wtf/terms/mean-reciprocal-rank-mrr/"
+                                    }
+                                }
+                            },
+                            "7": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 2,
+                                    "colSpan": 12,
+                                    "rowSpan": 1
+                                },
+                                "metadata": {
+                                    "inputs": [],
+                                    "type": "Extension/HubsExtension/PartType/MarkdownPart",
+                                    "settings": {
+                                        "content": {
+                                            "settings": {
+                                                "content": "## Search Performance",
+                                                "markdownSource": 1,
+                                                "subtitle": "",
+                                                "title": ""
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "8": {
+                                "position": {
+                                    "x": 13,
+                                    "y": 2,
+                                    "colSpan": 10,
+                                    "rowSpan": 1
+                                },
+                                "metadata": {
+                                    "inputs": [],
+                                    "type": "Extension/HubsExtension/PartType/MarkdownPart",
+                                    "settings": {
+                                        "content": {
+                                            "settings": {
+                                                "content": "## Search Monitoring",
+                                                "markdownSource": 1,
+                                                "subtitle": "",
+                                                "title": ""
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "9": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 3,
+                                    "colSpan": 12,
+                                    "rowSpan": 5
+                                },
+                                "metadata": {
+                                    "inputs": [
+                                        {
+                                            "name": "resourceTypeMode",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ComponentId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Scope",
+                                            "value": {
+                                                "resourceIds": [
+                                                    "[parameters('ResourceId')]"
+                                                ]
+                                            },
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartId",
+                                            "value": "19580958-4f50-40e2-b213-171ef39b7e3f",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Version",
+                                            "value": "2.0",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "TimeRange",
+                                            "value": "P1D",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DashboardId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DraftRequestParameters",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Query",
+                                            "value": "customEvents\n| where customDimensions.query == \"They is playing a game\"\n| where customDimensions.session == \"288044\"\n| summarize arg_max(1.0/customDimensions.position, 1.0/customDimensions.position, *) by tostring(customDimensions.session), tostring(customDimensions.query)\n",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ControlType",
+                                            "value": "AnalyticsGrid",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "SpecificChart",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartTitle",
+                                            "value": "Analytics",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartSubTitle",
+                                            "value": "",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Dimensions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "LegendOptions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "IsQueryContainTimeRange",
+                                            "value": false,
+                                            "isOptional": true
+                                        }
+                                    ],
+                                    "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+                                    "settings": {
+                                        "content": {
+                                            "Query": "customEvents \n| where customDimensions.event == 'onSuccess'  \n| project correlationId = tostring(customDimensions.correlationId), documentId=tostring(customDimensions.documentId), rankPosition=toint(customDimensions.indexRank), sessionId = tostring(customDimensions.sessionId), Date = bin(todatetime(customDimensions.mock_timestamp), 1d) \n| summarize ReciprocalRank =  arg_max(1.0 / rankPosition, *) by sessionId, correlationId, Date \n| where isnotnull(ReciprocalRank) \n| make-series [\"Daily Mean RR\"] = avg(ReciprocalRank) default=0 on Date step 1d \n| render timechart with (ymin=0, ymax=1)\n\n",
+                                            "ControlType": "FrameControlChart",
+                                            "SpecificChart": "Line",
+                                            "PartTitle": "Reciprocal Rank ",
+                                            "Dimensions": {
+                                                "aggregation": "Sum",
+                                                "splitBy": [],
+                                                "xAxis": {
+                                                    "name": "Date",
+                                                    "type": "datetime"
+                                                },
+                                                "yAxis": [
+                                                    {
+                                                        "name": "Daily Mean RR",
+                                                        "type": "real"
+                                                    }
+                                                ]
+                                            },
+                                            "IsQueryContainTimeRange": true,
+                                            "LegendOptions": {
+                                                "isEnabled": true,
+                                                "position": "Bottom"
+                                            }
+                                        }
+                                    },
+                                    "partHeader": {
+                                        "title": "Daily Reciprocal Rank",
+                                        "subtitle": "Mean RR across all daily queries"
+                                    }
+                                }
+                            },
+                            "10": {
+                                "position": {
+                                    "x": 13,
+                                    "y": 3,
+                                    "colSpan": 10,
+                                    "rowSpan": 5
+                                },
+                                "metadata": {
+                                    "inputs": [
+                                        {
+                                            "name": "resourceTypeMode",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ComponentId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Scope",
+                                            "value": {
+                                                "resourceIds": [
+                                                    "[parameters('ResourceId')]"
+                                                ]
+                                            },
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartId",
+                                            "value": "10513a33-85f4-4477-ad3c-9c2f578038a8",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Version",
+                                            "value": "2.0",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "TimeRange",
+                                            "value": "P7D",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DashboardId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DraftRequestParameters",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Query",
+                                            "value": "customEvents\n|  where customDimensions.event == 'onSuccess' \n| summarize dcount(tostring(customDimensions.sessionId)) by format_datetime(todatetime(customDimensions.mock_timestamp), 'yy-MM-dd')\n",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ControlType",
+                                            "value": "AnalyticsGrid",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "SpecificChart",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartTitle",
+                                            "value": "Analytics",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartSubTitle",
+                                            "value": "",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Dimensions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "LegendOptions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "IsQueryContainTimeRange",
+                                            "value": false,
+                                            "isOptional": true
+                                        }
+                                    ],
+                                    "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+                                    "settings": {
+                                        "content": {
+                                            "Query": "customEvents \n| make-series [\"Total Sessions\"] = dcountif(tostring(customDimensions.sessionId), name == \"onSearch\") default=0 on Date = todatetime(customDimensions.mock_timestamp) step 1d \n| render timechart\n\n",
+                                            "ControlType": "FrameControlChart",
+                                            "SpecificChart": "Line",
+                                            "PartTitle": "Number of sessions per day",
+                                            "Dimensions": {
+                                                "xAxis": {
+                                                    "name": "Date",
+                                                    "type": "datetime"
+                                                },
+                                                "yAxis": [
+                                                    {
+                                                        "name": "Total Sessions",
+                                                        "type": "real"
+                                                    }
+                                                ],
+                                                "splitBy": [],
+                                                "aggregation": "Sum"
+                                            },
+                                            "LegendOptions": {
+                                                "isEnabled": true,
+                                                "position": "Bottom"
+                                            },
+                                            "IsQueryContainTimeRange": true
+                                        }
+                                    },
+                                    "partHeader": {
+                                        "title": "Daily Session Count",
+                                        "subtitle": "Number of daily user sessions"
+                                    }
+                                }
+                            },
+                            "11": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 8,
+                                    "colSpan": 12,
+                                    "rowSpan": 4
+                                },
+                                "metadata": {
+                                    "inputs": [
+                                        {
+                                            "name": "resourceTypeMode",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ComponentId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Scope",
+                                            "value": {
+                                                "resourceIds": [
+                                                    "[parameters('ResourceId')]"
+                                                ]
+                                            },
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartId",
+                                            "value": "154c5d4d-4f48-4d1e-8414-470c04b67211",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Version",
+                                            "value": "2.0",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "TimeRange",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DashboardId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DraftRequestParameters",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Query",
+                                            "value": "",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ControlType",
+                                            "value": "AnalyticsGrid",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "SpecificChart",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartTitle",
+                                            "value": "Analytics",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartSubTitle",
+                                            "value": "",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Dimensions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "LegendOptions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "IsQueryContainTimeRange",
+                                            "value": true,
+                                            "isOptional": true
+                                        }
+                                    ],
+                                    "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+                                    "settings": {
+                                        "content": {
+                                            "Query": "let opened = customEvents \n| where customDimensions.event == 'onNavigate' \n| summarize opened_documents = dcount(tostring(customDimensions.documentId)) by Date = bin(todatetime(customDimensions.mock_timestamp), 1d), sessionId = tostring(customDimensions.sessionId), correlationId = tostring(customDimensions.correlationId); \n customEvents \n| where customDimensions.event == 'onSuccess' \n| summarize successful_documents = dcount(tostring(customDimensions.documentId)) by Date = bin(todatetime(customDimensions.mock_timestamp), 1d), sessionId = tostring(customDimensions.sessionId), correlationId = tostring(customDimensions.correlationId)\n| join kind=rightouter opened on Date, sessionId, correlationId\n| extend num_successful_documents = iff(isnull(successful_documents), 0, successful_documents) \n| extend successful_over_open = todouble(num_successful_documents) / todouble(opened_documents)\n| make-series [\"Successful documents over opened documents Rate\"] = avg(successful_over_open) * 100 default=0 on Date step 1d \n| render timechart with (ymin=0, ymax=100)\n\n",
+                                            "ControlType": "FrameControlChart",
+                                            "SpecificChart": "Line",
+                                            "Dimensions": {
+                                                "xAxis": {
+                                                    "name": "Date",
+                                                    "type": "datetime"
+                                                },
+                                                "yAxis": [
+                                                    {
+                                                        "name": "Successful documents over inspected documents Rate",
+                                                        "type": "real"
+                                                    }
+                                                ],
+                                                "splitBy": [],
+                                                "aggregation": "Sum"
+                                            },
+                                            "LegendOptions": {
+                                                "isEnabled": true,
+                                                "position": "Bottom"
+                                            }
+                                        }
+                                    },
+                                    "partHeader": {
+                                        "title": "Successful over Inspected Rate",
+                                        "subtitle": "Documents with success feedback / inspected documents"
+                                    }
+                                }
+                            },
+                            "12": {
+                                "position": {
+                                    "x": 13,
+                                    "y": 8,
+                                    "colSpan": 6,
+                                    "rowSpan": 4
+                                },
+                                "metadata": {
+                                    "inputs": [
+                                        {
+                                            "name": "resourceTypeMode",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ComponentId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Scope",
+                                            "value": {
+                                                "resourceIds": [
+                                                    "[parameters('ResourceId')]"
+                                                ]
+                                            },
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartId",
+                                            "value": "1426b094-7b3f-4791-b21c-133f5f57956a",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Version",
+                                            "value": "2.0",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "TimeRange",
+                                            "value": "P3D",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DashboardId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DraftRequestParameters",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Query",
+                                            "value": "customEvents \n| where name == 'onSearch'\n| project timestamp, customDimensions.query\n",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ControlType",
+                                            "value": "AnalyticsGrid",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "SpecificChart",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartTitle",
+                                            "value": "Analytics",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartSubTitle",
+                                            "value": "",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Dimensions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "LegendOptions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "IsQueryContainTimeRange",
+                                            "value": false,
+                                            "isOptional": true
+                                        }
+                                    ],
+                                    "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+                                    "settings": {
+                                        "content": {
+                                            "GridColumnsWidth": {
+                                                "Query": "185.999px",
+                                                "query_id": "211px"
+                                            },
+                                            "Query": "customEvents \n| where name == 'onSearch'\n| summarize Timestamp = min(todatetime(customDimensions.mock_timestamp)) by Query = tostring(customDimensions.query), correlation_id = tostring(customDimensions.correlationId)\n| project  Timestamp, Query, correlation_id\n| sort by Timestamp desc\n\n"
+                                        }
+                                    },
+                                    "partHeader": {
+                                        "title": "Latest Searched User Queries",
+                                        "subtitle": "Look at Searches performed"
+                                    }
+                                }
+                            },
+                            "13": {
+                                "position": {
+                                    "x": 19,
+                                    "y": 8,
+                                    "colSpan": 4,
+                                    "rowSpan": 4
+                                },
+                                "metadata": {
+                                    "inputs": [
+                                        {
+                                            "name": "resourceTypeMode",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ComponentId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Scope",
+                                            "value": {
+                                                "resourceIds": [
+                                                    "[parameters('ResourceId')]"
+                                                ]
+                                            },
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartId",
+                                            "value": "353673ab-2686-4d39-a13e-2564f5106d30",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Version",
+                                            "value": "2.0",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "TimeRange",
+                                            "value": "P3D",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DashboardId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DraftRequestParameters",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Query",
+                                            "value": "customEvents \n| where name == 'onSearch'\n| summarize [\"Query Count\"] = sum(itemCount) by Query = tostring(customDimensions.query)\n| order by [\"Query Count\"] desc\n",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ControlType",
+                                            "value": "AnalyticsGrid",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "SpecificChart",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartTitle",
+                                            "value": "Analytics",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartSubTitle",
+                                            "value": "",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Dimensions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "LegendOptions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "IsQueryContainTimeRange",
+                                            "value": false,
+                                            "isOptional": true
+                                        }
+                                    ],
+                                    "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+                                    "settings": {
+                                        "content": {
+                                            "GridColumnsWidth": {
+                                                "Query": "200px"
+                                            },
+                                            "Query": "customEvents \n| where name == 'onSearch'\n| summarize [\"Query Count\"] = dcount(tostring(customDimensions.correlationId)) by Query = tostring(customDimensions.query)\n| order by [\"Query Count\"] desc\n\n"
+                                        }
+                                    },
+                                    "partHeader": {
+                                        "title": "Top Searched Queries",
+                                        "subtitle": ""
+                                    }
+                                }
+                            },
+                            "14": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 12,
+                                    "colSpan": 6,
+                                    "rowSpan": 1
+                                },
+                                "metadata": {
+                                    "inputs": [],
+                                    "type": "Extension/HubsExtension/PartType/MarkdownPart",
+                                    "settings": {
+                                        "content": {
+                                            "settings": {
+                                                "content": "<h2><span style=\"text-decoration:\">\n<span style=\"color:#C21E56\">&#9660; </span>\n Bottom 20 Queries with Lowest Reciprocal Rank&nbsp;</span></h2>\n",
+                                                "markdownSource": 1,
+                                                "markdownUri": null,
+                                                "subtitle": "",
+                                                "title": ""
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "15": {
+                                "position": {
+                                    "x": 6,
+                                    "y": 12,
+                                    "colSpan": 6,
+                                    "rowSpan": 1
+                                },
+                                "metadata": {
+                                    "inputs": [],
+                                    "type": "Extension/HubsExtension/PartType/MarkdownPart",
+                                    "settings": {
+                                        "content": {
+                                            "settings": {
+                                                "content": "<h2><span style=\"text-decoration:\"><span style>\n<span style=\"color:#7A9D3B\">&#9650; </span>\nTop 20 Queries with Highest Reciprocal Rank&nbsp;</span></span></h2>",
+                                                "markdownSource": 1,
+                                                "markdownUri": null,
+                                                "subtitle": "",
+                                                "title": ""
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "17": {
+                                "position": {
+                                    "x": 0,
+                                    "y": 13,
+                                    "colSpan": 6,
+                                    "rowSpan": 6
+                                },
+                                "metadata": {
+                                    "inputs": [
+                                        {
+                                            "name": "resourceTypeMode",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ComponentId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Scope",
+                                            "value": {
+                                                "resourceIds": [
+                                                    "[parameters('ResourceId')]"
+                                                ]
+                                            },
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartId",
+                                            "value": "13a1000d-16cc-490b-817d-1d9ad597d630",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Version",
+                                            "value": "2.0",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "TimeRange",
+                                            "value": "P1D",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DashboardId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DraftRequestParameters",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Query",
+                                            "value": "customEvents\n| where customDimensions.event == 'onSuccess' \n| summarize ReciprocalRank =  arg_max(1.0 / (customDimensions.index_rank + 1), 1.0 / (customDimensions.index_rank + 1), *) \n    by\n    tostring(customDimensions.sessionId),\n    tostring(customDimensions.correlationId),\n    tostring(customDimensions.query),\n    format_datetime(timestamp, 'yy-MM-dd')\n// | sort by ReciprocalRank asc\n|project timestamp, customDimensions_sessionId, customDimensions_correlationId, customDimensions.query, ReciprocalRank\n| top 10 by ReciprocalRank asc\n\n",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ControlType",
+                                            "value": "AnalyticsGrid",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "SpecificChart",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartTitle",
+                                            "value": "Analytics",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartSubTitle",
+                                            "value": "",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Dimensions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "LegendOptions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "IsQueryContainTimeRange",
+                                            "value": false,
+                                            "isOptional": true
+                                        }
+                                    ],
+                                    "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+                                    "settings": {
+                                        "content": {
+                                            "Query": "customEvents \n| where customDimensions.event == 'onSuccess'  \n| extend correlationId = tostring(customDimensions.correlationId), documentId=tostring(customDimensions.documentId), rankPosition=toint(customDimensions.indexRank), sessionId = tostring(customDimensions.sessionId), Date = bin(todatetime(customDimensions.mock_timestamp), 1d) \n| summarize ReciprocalRank =  arg_max(1.0 / rankPosition, *) by sessionId, correlationId, Date \n| where isnotnull(ReciprocalRank)\n| project Timestamp = todatetime(customDimensions.mock_timestamp), ReciprocalRank, Query = tostring(customDimensions.query)\n| top 20 by ReciprocalRank asc\n| sort by ReciprocalRank asc, Timestamp desc\n\n",
+                                            "IsQueryContainTimeRange": false
+                                        }
+                                    },
+                                    "partHeader": {
+                                        "title": "Lowest 20 RR Queries",
+                                        "subtitle": ""
+                                    }
+                                }
+                            },
+                            "18": {
+                                "position": {
+                                    "x": 6,
+                                    "y": 13,
+                                    "colSpan": 6,
+                                    "rowSpan": 6
+                                },
+                                "metadata": {
+                                    "inputs": [
+                                        {
+                                            "name": "resourceTypeMode",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ComponentId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Scope",
+                                            "value": {
+                                                "resourceIds": [
+                                                    "[parameters('ResourceId')]"
+                                                ]
+                                            },
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartId",
+                                            "value": "34fbd8c5-59a2-42ab-b744-404350134f6e",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Version",
+                                            "value": "2.0",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "TimeRange",
+                                            "value": "P1D",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DashboardId",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "DraftRequestParameters",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Query",
+                                            "value": "customEvents\n| where customDimensions.event == 'onSuccess' \n| summarize ReciprocalRank =  arg_max(1.0 / (customDimensions.index_rank + 1), 1.0 / (customDimensions.index_rank + 1), *) \n    by\n    tostring(customDimensions.sessionId),\n    tostring(customDimensions.correlationId),\n    tostring(customDimensions.query),\n    format_datetime(timestamp, 'yy-MM-dd')\n// | sort by ReciprocalRank asc\n|project timestamp, customDimensions_sessionId, customDimensions_correlationId, customDimensions.query, ReciprocalRank\n| top 10 by ReciprocalRank desc\n\n",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "ControlType",
+                                            "value": "AnalyticsGrid",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "SpecificChart",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartTitle",
+                                            "value": "Analytics",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "PartSubTitle",
+                                            "value": "",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "Dimensions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "LegendOptions",
+                                            "isOptional": true
+                                        },
+                                        {
+                                            "name": "IsQueryContainTimeRange",
+                                            "value": false,
+                                            "isOptional": true
+                                        }
+                                    ],
+                                    "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+                                    "settings": {
+                                        "content": {
+                                            "Query": "customEvents \n| where customDimensions.event == 'onSuccess'  \n| extend correlationId = tostring(customDimensions.correlationId), documentId=tostring(customDimensions.documentId), rankPosition=toint(customDimensions.indexRank), sessionId = tostring(customDimensions.sessionId), Date = bin(todatetime(customDimensions.mock_timestamp), 1d) \n| summarize ReciprocalRank =  arg_max(1.0 / rankPosition, *) by sessionId, correlationId, Date \n| where isnotnull(ReciprocalRank)\n| project Timestamp = todatetime(customDimensions.mock_timestamp), ReciprocalRank, Query = tostring(customDimensions.query)\n| top 20 by ReciprocalRank desc\n| sort by ReciprocalRank desc, Timestamp desc\n\n",
+                                            "IsQueryContainTimeRange": false
+                                        }
+                                    },
+                                    "partHeader": {
+                                        "title": "Top 20 RR Queries",
+                                        "subtitle": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "metadata": {
+                    "model": {
+                        "timeRange": {
+                            "value": {
+                                "relative": {
+                                    "duration": 24,
+                                    "timeUnit": 1
+                                }
+                            },
+                            "type": "MsPortalFx.Composition.Configuration.ValueTypes.TimeRange"
+                        },
+                        "filterLocale": {
+                            "value": "en-us"
+                        },
+                        "filters": {
+                            "value": {
+                                "MsPortalFx_TimeRange": {
+                                    "model": {
+                                        "format": "utc",
+                                        "granularity": "auto",
+                                        "relative": "48h"
+                                    },
+                                    "displayCache": {
+                                        "name": "UTC Time",
+                                        "value": "Past 48 hours"
+                                    },
+                                    "filteredPartIds": []
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "name": "dashboard-kpi",
+    "type": "Microsoft.Portal/dashboards",
+    "location": "INSERT LOCATION",
+    "tags": {
+        "hidden-title": "dashboard-kpi"
+    },
+    "apiVersion": "2015-08-01-preview"
+}
