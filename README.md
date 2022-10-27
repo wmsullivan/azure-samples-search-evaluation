@@ -70,7 +70,7 @@ To get the resource ID, sign in to the [Azure portal](https://portal.azure.com )
 
 Click the button below when you're ready to deploy.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmarcos-calvo%2Fir-dashboard%2Fmain%2Fsrc%2Farm%2Fdashboard.template.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Fazure-samples-search-evaluation%2Fmain%2Fsrc%2Farm%2Fdashboard.template.json)
 
 After you fill in the deployment properties and select **Review and Create**, you'll be prompted to agree to the terms of service. Select either of the links that take you to service terms: **Azure Marketplace Terms** or **Azure Marketplace**.
 
